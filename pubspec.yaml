@@ -1,0 +1,6 @@
+name: RestLet
+version: 0.0.1
+author: Metál Ádám
+description: Very simple REST api on based route package
+dependencies:
+  route: any
