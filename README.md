@@ -22,7 +22,7 @@ void main() {
     Router router = new Router(server);
     RestServer rest = new RestServer(router);
     
-    rest.addResource(new Resource("GET", "/api/hello"))
+    rest.get("/api/hello")
       .listen((ResourceEvent e){
         var request = e.request;
         print("Request on");
