@@ -13,6 +13,6 @@ class Route {
     isCompiled = false;
   }
   
-  bool get hasParams         => params.isNotEmpty;
-  bool get isStatic          => !hasParams;  
+  bool get hasParams => params.isNotEmpty;
+  bool get isStatic  => !hasParams;  
 }

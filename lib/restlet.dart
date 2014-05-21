@@ -9,6 +9,9 @@ part './router/param.dart';
 part './router/route.dart';
 part './router/route_compiler.dart';
 part './router/route_resolver.dart';
+part './resource/resource.dart';
+part './resource/resource_factory.dart';
+part './resource/resource_event.dart';
 
 class RestServer {
   Map<Route,Resource>_resources;
@@ -22,11 +25,24 @@ class RestServer {
     _resolver  = new RouteResolver();
   }
   
+  Stream<ResourceEvent> get(String route) {
+    return this.addResource(_createResource(new GETFactory(), route));
+  }
+  
+  Stream<ResourceEvent> post(String route) {
+    return this.addResource(_createResource(new POSTFactory(), route));
+  }
+  
+  Stream<ResourceEvent> put(String route) {
+    return this.addResource(_createResource(new PUTFactory(), route));
+  }
+  
+  Stream<ResourceEvent> delete(String route) {
+    return this.addResource(_createResource(new DELETEFactory(), route));
+  }
+  
   Stream<ResourceEvent> addResource(Resource res) {
-    Route route = res.route;
-    _compiler.compile(route);
-    _resources[route] = res;
-    
+    _compileResource(res);
     return res.getDispatcher();
   }
   
@@ -39,35 +55,13 @@ class RestServer {
         });
     });
   }
-}
-
-
-
-/**
- * 
- */
-class Resource {
-  Route route;
-  String method;
   
-  StreamController<ResourceEvent> _dsStream;
-  
-  Stream<ResourceEvent> getDispatcher() {
-    return _dsStream.stream;
-  }
-
-  Resource(this.method, String url) {
-    route = new Route(url);
-    _dsStream = new StreamController<ResourceEvent>();
+  Resource _createResource(ResourceFactory factory, String url) {
+    return factory.createResource(url);
   }
   
-  void dispatch(HttpRequest req,Route route) {
-    _dsStream.add(new ResourceEvent(req,route));
+  void _compileResource(Resource res) {
+    _compiler.compile(res.route);
+    _resources[res.route] = res;
   }
-}
-
-class ResourceEvent {
-  HttpRequest request;
-  Route route;
-  ResourceEvent(this.request,this.route);
 }

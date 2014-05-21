@@ -65,7 +65,6 @@ class RouteCompiler {
       keys.forEach((k){
         tmp = tmp.replaceAll(":${k}", "([a-zA-Z0-9]+)");
       });
-      print(tmp);
       _pattern = new UrlPattern(tmp);
     }
   
