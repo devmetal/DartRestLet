@@ -4,6 +4,7 @@ import 'package:route/url_pattern.dart';
 import 'package:route/server.dart';
 import 'dart:io';
 import 'dart:async';
+import 'dart:convert';
 
 part './router/param.dart';
 part './router/route.dart';
@@ -12,14 +13,18 @@ part './router/route_resolver.dart';
 part './resource/resource.dart';
 part './resource/resource_factory.dart';
 part './resource/resource_event.dart';
+part './request/rest_request.dart';
 
 class RestServer {
   Map<Route,Resource>_resources;
   RouteCompiler _compiler;
   RouteResolver _resolver;
-  Router _router;
   
-  RestServer(this._router) {
+  Router _router;
+  HttpServer _server;
+  
+  RestServer(this._server) {
+    _router = new Router(_server);
     _resources = <Route,Resource>{};
     _compiler  = new RouteCompiler();
     _resolver  = new RouteResolver();

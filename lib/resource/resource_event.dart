@@ -1,7 +1,7 @@
 part of restlet;
 
 class ResourceEvent {
-  HttpRequest request;
+  RestRequest request;
   Route route;
   ResourceEvent(this.request,this.route);
 }

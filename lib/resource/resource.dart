@@ -16,6 +16,9 @@ class Resource {
   }
   
   void dispatch(HttpRequest req,Route route) {
-    _dsStream.add(new ResourceEvent(req,route));
+    RestRequest restReq = new RestRequest(req);
+    restReq.bodyParsed().then((_){
+      _dsStream.add(new ResourceEvent(restReq,route));
+    });
   }
 }
