@@ -1,71 +1,67 @@
 part of restlet;
 
-class RouteCompiler {
+abstract class IRouteCompiler {
+  void compile(Route route);
+}
+
+class RouteCompiler implements IRouteCompiler {
   
   String _route;
   String _static;
   String _dynamic;
     
-  Map<String,Param> _params;
-  List<Param> _compiled;
+  List<String> _compiled;
   
   UrlPattern _pattern;
   
-  void compile(Route r) {
-    _route = r.route;
-    _params   = <String,Param>{};
-    _compiled = <Param>[];
+  void compile(Route route) {
+    _route = route.route;
+    _compiled = <String>[];
     
     if (!_route.contains(':')) {
       _static  = _route;
       _dynamic = "";
       _pattern = new UrlPattern(_route);
     } else {
-      _getStaticPart();
-      _getDynamicPart();
-      _parseDynamicPart();
+      _compileStaticPart();
+      _compileDynamicPart();
       _compilePattern();
     }
     
-    r.pattern    = _pattern; 
-    r.params     = _params;
-    r.compiled   = _compiled;
-    r.isCompiled = true;
+    route.compiled   = _compiled;
+    route.pattern    = _pattern;
+    route.isCompiled = true;
   }
     
-    void _getStaticPart() {
-      _static = _route.substring(0,_route.indexOf(':'));
-    }
+  void _compileStaticPart() {
+    _static = _route.substring(0,_route.indexOf(':'));
+  }
+  
+  void _compileDynamicPart() {
+    _dynamic = _route.substring(_route.indexOf(':'));
     
-    void _getDynamicPart() {
-      _dynamic = _route.substring(_route.indexOf(':'));
-    }
+    _parseDynamicPart();
+  }
+  
+  void _parseDynamicPart() {
+    var regexStr = "\:([a-zA-Z_-]*)(\/){0,1}";
+    var regexObj = new RegExp(regexStr);
     
-    void _parseDynamicPart() {
-      _params = <String,Param>{};
-      
-      var regexStr = "\:([a-zA-Z_-]*)(\/){0,1}";
-      var regexObj = new RegExp(regexStr);
-      
-      regexObj.allMatches(_dynamic).forEach((e){
-        var param = e.group(1);
-        _params[param] = _compileParam(param);
-      });
-    }
-    
-    Param _compileParam(String name) {
-      var param = new Param<String>(name);
+    regexObj.allMatches(_dynamic).forEach((e){
+      var param = e.group(1);
       _compiled.add(param);
-      return param;
-    }
+    });
+  }
+  
+  void _compilePattern() {
+    var tmp  = _route;
+    var keys = _compiled;
     
-    void _compilePattern() {
-      var tmp = _route;
-      var keys = _params.keys;
-      keys.forEach((k){
-        tmp = tmp.replaceAll(":${k}", "([a-zA-Z0-9]+)");
-      });
-      _pattern = new UrlPattern(tmp);
-    }
+    keys.forEach((k){
+      tmp = tmp.replaceAll(":${k}", "([a-zA-Z0-9]+)");
+    });
+    
+    _pattern = new UrlPattern(tmp);
+  }
   
 }

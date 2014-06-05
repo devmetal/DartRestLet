@@ -6,7 +6,8 @@ class Route {
   
   UrlPattern pattern;
   
-  List<Param> compiled;
+  List<String> compiled;
+  
   Map<String,Param> params;
   
   Route(this.route) {
