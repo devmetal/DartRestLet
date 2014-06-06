@@ -68,34 +68,31 @@ class ParamMap {
     return this._params[key]; 
   }
   
-  operator [](String name) => 
-    getByName(name);
+  void putByIndex(int index, Param p) {
+    Param _p = getByIndex(index);
+    if (_p != null) {
+      _p = p;
+    } else {
+      this._params[new ParamMapEntryKey(index,"")] = p; 
+    }
+  }
   
-  operator [](int index) =>
-    getByIndex(index);
-  
-  operator []=(ParamMapEntryKey key, Param p) => 
-    _params[key] = p;
-  
-  operator []=(String name, Param p) {
+  void putByName(String name, Param p) {
     Param _p = getByName(name);
     if (_p != null) {
       _p = p; 
     } else {
       int index = _getMaxIndex() + 1;
-      this[new ParamMapEntryKey(index,name)] = p;
+      this._params[new ParamMapEntryKey(index,name)] = p;
     }
   }
   
-  operator []=(int index, Param p) {
-    Param _p = getByIndex(index);
-    if (_p != null) {
-      _p = p;
-    } else {
-      this[new ParamMapEntryKey(index,"")] = p; 
-    }
-  }
+  operator [](String name) => 
+    getByName(name);
   
+  operator []=(String name, Param p) =>
+    putByName(name, p);
+   
   int _getMaxIndex() {
     int max = -1;
     this._params.keys.forEach((e){
