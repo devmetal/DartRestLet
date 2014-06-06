@@ -32,6 +32,10 @@ class ParamMapEntryKey {
 class ParamMap {
   Map<ParamMapEntryKey, Param> _params;
   
+  ParamMap() {
+    _params = <ParamMapEntryKey,Param>{};
+  }
+  
   bool containsIndex(int index) {
     return _params.keys.any((key) => key.index == index);
   }
@@ -43,6 +47,11 @@ class ParamMap {
   bool containsKey(ParamMapEntryKey key) {
     return _params.containsKey(key);
   }
+  
+  bool get isNotEmpty => _params.isNotEmpty;
+  bool get isEmpty    => _params.isEmpty;
+  
+  Iterable<ParamMapEntryKey> get keys => _params.keys;
   
   Param getByIndex(int index) {
     ParamMapEntryKey key;
@@ -65,22 +74,42 @@ class ParamMap {
     
     keys = this._params.keys;
     key  = keys.singleWhere((k) => k.name == name);
-    return this._params[key]; 
+    return this._params[key];
+  }
+  
+  ParamMapEntryKey getKeyByIndex(int index) {
+    Iterable<ParamMapEntryKey> keys;
+    if (!containsIndex(index)) {
+      return null;
+    }
+    
+    keys = this._params.keys;
+    return keys.singleWhere((k) => k.index == index);
+  }
+  
+  ParamMapEntryKey getKeyByName(String name) {
+    Iterable<ParamMapEntryKey> keys;
+    if (!containsName(name)) {
+      return null;
+    }
+    
+    keys = this._params.keys;
+    return keys.singleWhere((k) => k.name == name);
   }
   
   void putByIndex(int index, Param p) {
-    Param _p = getByIndex(index);
-    if (_p != null) {
-      _p = p;
+    var k = getKeyByIndex(index);
+    if (k != null) {
+      this._params[k] = p;
     } else {
       this._params[new ParamMapEntryKey(index,"")] = p; 
     }
   }
   
   void putByName(String name, Param p) {
-    Param _p = getByName(name);
-    if (_p != null) {
-      _p = p; 
+    var k = getKeyByName(name);
+    if (k != null) {
+      this._params[k] = p; 
     } else {
       int index = _getMaxIndex() + 1;
       this._params[new ParamMapEntryKey(index,name)] = p;
@@ -101,6 +130,14 @@ class ParamMap {
       }
     });
     return max;
+  }
+  
+  String toString() {
+    String tmp = "";
+    _params.forEach((k,v){
+      tmp += "${k.index}. ${k.name} = ${v.getValue()}\n";
+    });
+    return tmp;
   }
 }
 

@@ -5,11 +5,14 @@ class RouteResolver {
   
   void resolve(Route r, String path) {
     List<String> parsed   = r.pattern.parse(path);
-    List<String> compiled = r.compiled;
     
     parsed.forEach((e){
-      var i = parsed.indexOf(e);
-      //compiled[i].setValue(e);
+      var index = parsed.indexOf(e);
+      var key   = r.params.getKeyByIndex(index);
+      
+      Param<String> p = new Param<String>(key.name,e);
+      
+      r.params[key.name] = p;
     });
   }
 }

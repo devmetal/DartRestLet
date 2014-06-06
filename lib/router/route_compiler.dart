@@ -10,13 +10,13 @@ class RouteCompiler implements IRouteCompiler {
   String _static;
   String _dynamic;
     
-  List<String> _compiled;
+  ParamMap _compiled;
   
   UrlPattern _pattern;
   
   void compile(Route route) {
     _route = route.route;
-    _compiled = <String>[];
+    _compiled = new ParamMap();
     
     if (!_route.contains(':')) {
       _static  = _route;
@@ -28,7 +28,7 @@ class RouteCompiler implements IRouteCompiler {
       _compilePattern();
     }
     
-    route.compiled   = _compiled;
+    route.params     = _compiled;
     route.pattern    = _pattern;
     route.isCompiled = true;
   }
@@ -49,16 +49,16 @@ class RouteCompiler implements IRouteCompiler {
     
     regexObj.allMatches(_dynamic).forEach((e){
       var param = e.group(1);
-      _compiled.add(param);
+      _compiled[param] = null;
     });
   }
   
   void _compilePattern() {
     var tmp  = _route;
-    var keys = _compiled;
+    var keys = _compiled.keys;
     
     keys.forEach((k){
-      tmp = tmp.replaceAll(":${k}", "([a-zA-Z0-9]+)");
+      tmp = tmp.replaceAll(":${k.name}", "([a-zA-Z0-9]+)");
     });
     
     _pattern = new UrlPattern(tmp);

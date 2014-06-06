@@ -54,7 +54,7 @@ void main() {
           ..sendResponse();
       });
     
-    rest.addResource(new Resource("GET", "/api/hello/:name"))
+    rest.addResource(new Resource("GET", "/api/hello/:name/:male"))
       .listen((ResourceEvent e){
         var request = e.request;
         print("Request on");
@@ -62,13 +62,14 @@ void main() {
         print(request.uri.path);
         
         var route = e.route;
-        var name = route.params['name'].getValue();
+        var name = route.params["name"].getValue();
+        var male = route.params["male"].getValue();
         
         request.response
           ..statusCode = 200
           ..headers
             .add('Content-Type', 'text/plain')
-          ..write("Hello to ${name}")
+          ..write("Hello to ${(male == "1"?"Mr.":"Ms.")} ${name}")
           ..close();
       });
     

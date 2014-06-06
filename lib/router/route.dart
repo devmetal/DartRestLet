@@ -2,13 +2,12 @@ part of restlet;
 
 class Route {
   String route;
+  
   bool isCompiled;
   
   UrlPattern pattern;
   
-  List<String> compiled;
-  
-  Map<String,Param> params;
+  ParamMap params;
   
   Route(this.route) {
     isCompiled = false;
