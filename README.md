@@ -86,8 +86,8 @@ void main() {
   });
 }
 
-Future<Map<String,dynamic>> getBookDatas(String name) {
-    Completer<Map<String,dynamic>> c = new Completer<Map<String,dynamic>>();
+Future&#60;Map&#60;String,dynamic&#62;&#62; getBookDatas(String name) {
+    Completer&#60;Map&#60;String,dynamic&#62;&#62; c = new Completer&#60;Map&#60;String,dynamic&#62;&#62;();
     var uri = new Uri.https("www.googleapis.com", "/books/v1/volumes",{"q":name});
     print(uri.toString());
     
