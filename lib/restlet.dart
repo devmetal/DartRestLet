@@ -6,6 +6,8 @@ import 'dart:io';
 import 'dart:async';
 import 'dart:convert';
 
+part './component/component.dart';
+
 part './router/param.dart';
 part './router/route.dart';
 part './router/route_compiler.dart';
@@ -13,6 +15,7 @@ part './router/route_resolver.dart';
 part './resource/resource.dart';
 part './resource/resource_factory.dart';
 part './resource/resource_event.dart';
+part './module/rest_module.dart';
 part './request/rest_request.dart';
 
 class RestServer {
