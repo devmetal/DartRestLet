@@ -51,7 +51,7 @@ void main() {
         request
           ..setResponseStatus(403)
           ..addToResponseHeader("Content-Type", "text/html")
-          ..writeToResponse("<h1>Wrong request</h1>")
+          ..writeToResponse("&#60;h1&#62;Wrong request&#60;/h1&#62;")
           ..sendResponse();
         return;
       }
