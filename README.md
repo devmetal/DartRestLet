@@ -14,80 +14,79 @@ import 'dart:convert';
 import 'dart:async';
 
 void main() {
-  HttpServer.bind(InternetAddress.LOOPBACK_IP_V4, 4444)
-  .then((HttpServer server){
-    print("Address: http://${server.address.address}:${server.port}");
-    
-    RestServer rest = new RestServer(server);
-    
-    rest.post("/api/book")
-      .listen((ResourceEvent e){
-        var request = e.request;
-        var body = request.body;
-        
-        print("Request on");
-        print(request.method);
-        print(request.uri.path);
-        print(JSON.encode(request.body));
-        
-        if (body == null || !(body is Map) || 
-            !body.containsKey('bookName')) {
-          request
-            ..setResponseStatus(403)
-            ..addToResponseHeader("Content-Type", "text/html")
-            ..writeToResponse("Wrong request")
-            ..sendResponse();
-          return;
-        }
-        
-        getBookDatas(body['bookName'])
-        .then((datas){
-          request
-            ..setResponseStatus(200)
-            ..addToResponseHeader("Content-Type", "application/json")
-            ..addAllToResponse(datas)
-            ..sendResponse();
-        });
-      });
-    
-    rest.get("/api/hello")
-      .listen((ResourceEvent e){
-        var request = e.request;
-        print("Request on");
-        print(request.method);
-        print(request.uri.path);
-        
+  
+  RestServer r = new RestServer('/api');
+  
+  r.get("/hello/:name/:male")
+    .listen((ResourceEvent e){
+      var request = e.request;
+      print("Request on");
+      print(request.method);
+      print(request.uri.path);
+      
+      var route = e.route;
+      var name = route.params["name"].getValue();
+      var male = route.params["male"].getValue();
+      
+      request.response
+        ..statusCode = 200
+        ..headers
+          .add('Content-Type', 'text/plain')
+        ..write("Hello to ${(male == "1"?"Mr.":"Ms.")} ${name}")
+        ..close();
+    });
+  
+  r.post("/book")
+    .listen((ResourceEvent e){
+      var request = e.request;
+      var body = request.body;
+      
+      print("Request on");
+      print(request.method);
+      print(request.uri.path);
+      print(JSON.encode(request.body));
+      
+      if (body == null || !(body is Map) || 
+          !body.containsKey('bookName')) {
+        request
+          ..setResponseStatus(403)
+          ..addToResponseHeader("Content-Type", "text/html")
+          ..writeToResponse("<h1>Wrong request</h1>")
+          ..sendResponse();
+        return;
+      }
+      
+      getBookDatas(body['bookName'])
+      .then((datas){
         request
           ..setResponseStatus(200)
-          ..addToResponseHeader('Content-Type', 'text/plain')
-          ..writeToResponse("Hello to")
+          ..addToResponseHeader("Content-Type", "application/json")
+          ..addAllToResponse(datas)
           ..sendResponse();
       });
-    
-    rest.addResource(new Resource("GET", "/api/hello/:name"))
-      .listen((ResourceEvent e){
-        var request = e.request;
-        print("Request on");
-        print(request.method);
-        print(request.uri.path);
-        
-        var route = e.route;
-        var name = route.params['name'].getValue();
-        
-        request.response
-          ..statusCode = 200
-          ..headers
-            .add('Content-Type', 'text/plain')
-          ..write("Hello to ${name}")
-          ..close();
-      });
-    
-    rest.start();
-  });
+    });
+  
+  r.get("/hello")
+    .listen((ResourceEvent e){
+      var request = e.request;
+      print("Request on");
+      print(request.method);
+      print(request.uri.path);
+      
+      request
+        ..setResponseStatus(200)
+        ..addToResponseHeader('Content-Type', 'text/plain')
+        ..writeToResponse("Hello to")
+        ..sendResponse();
+    });
+  
+  RestLet app = new RestLet();
+  app.addComponent(r);
+  app.serve(InternetAddress.LOOPBACK_IP_V4, 4444);
 }
 
-Future<Map<String,dynamic>> getBookDatas(String name) {
-    Completer<Map<String,dynamic>> c = new Completer<Map<String,dynamic>>();
+Future&#60;Map&#60;String,dynamic&#62;&#62; getBookDatas(String name) {
+    Completer&#60;Map&#60;String,dynamic&#62;&#62; c = new Completer&#60;Map&#60;String,dynamic&#62;&#62;();
     var uri = new Uri.https("www.googleapis.com", "/books/v1/volumes",{"q":name});
     print(uri.toString());
     
