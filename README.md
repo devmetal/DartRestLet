@@ -1,13 +1,15 @@
-<h1>Dart RESTLet</h1>
-<p>
+Dart RESTLet
+============
+
 This is a very simple dart package for restful webservices.
-</p>
-<p>
+
 This API based on <a href="https://github.com/justinfagnani/route">route</a> project.
 I wanna create api like expressjs, and i hope is useful.
-</p>
-<h2>Example</h2>
-<pre>
+
+Example
+-------
+
+```dart
 library example;
 
 import 'package:rest_let/restlet.dart';
@@ -97,9 +99,7 @@ void main() {
     rest.start();
   });
 }
-</pre>
+```
 
-<p>
 The project state is under construction, but actualy working. 
 My goal: I wanna create one easy and useful REST API to Dart. 
-</p>
