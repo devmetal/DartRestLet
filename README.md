@@ -8,60 +8,37 @@ I wanna create api like expressjs, and i hope is useful.
 </p>
 <h2>Example</h2>
 <pre>
+library example;
+
 import 'package:rest_let/restlet.dart';
+import 'package:route/server.dart';
 import 'dart:io';
 import 'dart:convert';
-import 'dart:async';
+
+final String PATH_TO_WEB = "../web";
 
 void main() {
   HttpServer.bind(InternetAddress.LOOPBACK_IP_V4, 4444)
   .then((HttpServer server){
+    print("Server started!");
     print("Address: http://${server.address.address}:${server.port}");
     
-    RestServer rest = new RestServer(server);
+    Router router = new Router(server);
+    RestServer rest = new RestServer(router);
     
-    rest.post("/api/book")
-      .listen((ResourceEvent e){
-        var request = e.request;
-        var body = request.body;
-        
-        print("Request on");
-        print(request.method);
-        print(request.uri.path);
-        print(JSON.encode(request.body));
-        
-        if (body == null || !(body is Map) || 
-            !body.containsKey('bookName')) {
-          request
-            ..setResponseStatus(403)
-            ..addToResponseHeader("Content-Type", "text/html")
-            ..writeToResponse("Wrong request")
-            ..sendResponse();
-          return;
-        }
-        
-        getBookDatas(body['bookName'])
-        .then((datas){
-          request
-            ..setResponseStatus(200)
-            ..addToResponseHeader("Content-Type", "application/json")
-            ..addAllToResponse(datas)
-            ..sendResponse();
-        });
-      });
-    
-    rest.get("/api/hello")
+    rest.addResource(new Resource("GET", "/api/hello"))
       .listen((ResourceEvent e){
         var request = e.request;
         print("Request on");
         print(request.method);
         print(request.uri.path);
         
-        request
-          ..setResponseStatus(200)
-          ..addToResponseHeader('Content-Type', 'text/plain')
-          ..writeToResponse("Hello to")
-          ..sendResponse();
+        request.response
+          ..statusCode = 200
+          ..headers
+            .add('Content-Type', 'text/plain')
+          ..write("Hello to")
+          ..close();
       });
     
     rest.addResource(new Resource("GET", "/api/hello/:name"))
@@ -82,37 +59,43 @@ void main() {
           ..close();
       });
     
+    rest.addResource(new Resource("POST","/api/hello/:id"))
+      .listen((ResourceEvent e){
+        var request = e.request;
+        var route = e.route;
+        print("Request on");
+        print(request.method);
+        print(request.uri.path);
+        
+        if (request.contentLength == -1) {
+          request.response
+            ..statusCode = 200
+            ..write('')
+            ..close();
+        } else {
+          UTF8.decodeStream(request)
+            .then((data){
+            var json = JSON.decode(data);
+            var name = json['name'];
+            var age  = json['age'];
+            var id = route.params['id'].getValue();
+            request.response
+              ..statusCode = 200
+              ..headers
+                .add('Content-Type', 'application/json')
+              ..write(JSON.encode(
+                      {'return':{
+                        'name':name,
+                        'age':age,
+                        'id':id}
+                      }))
+              ..close();
+          });
+        }
+      });
+    
     rest.start();
   });
-}
-
-Future&#60;Map&#60;String,dynamic&#62;&#62; getBookDatas(String name) {
-    Completer&#60;Map&#60;String,dynamic&#62;&#62; c = new Completer&#60;Map&#60;String,dynamic&#62;&#62;();
-    var uri = new Uri.https("www.googleapis.com", "/books/v1/volumes",{"q":name});
-    print(uri.toString());
-    
-    var client = new HttpClient();
-    client.getUrl(uri)
-      .then((HttpClientRequest req) => req.close()
-        .then((HttpClientResponse resp){
-          UTF8.decodeStream(resp).then((sdata){
-            var data = JSON.decode(sdata);
-            if (data.containsKey('items')) {
-              var item = data['items'][0];
-              var bookDatas = {
-                'title':item['volumeInfo']['title'],
-                'authors':item['volumeInfo']['authors'],
-                'desc':item['volumeInfo']['description'],
-                'ids':item['volumeInfo']['industryIdentifiers'],
-                'rating':item['volumeInfo']['averageRating']
-              };
-              c.complete(bookDatas);
-            } else {
-              c.complete({'notfound':true});
-            }
-          });
-        }));
-  return c.future;
 }
 </pre>
 

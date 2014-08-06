@@ -1,6 +1,6 @@
 library example;
 
-import 'restlet.dart';
+import 'package:rest_let/restlet.dart';
 import 'package:route/server.dart';
 import 'dart:io';
 import 'dart:convert';
