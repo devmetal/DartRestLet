@@ -1,4 +1,4 @@
-part of restlet;
+part of restlet.router;
 
 abstract class IRouteCompiler {
   void compile(Route route);
@@ -19,7 +19,7 @@ class RouteCompiler implements IRouteCompiler {
     _compiled = new ParamMap();
     
     if (!_route.contains(':')) {
-      _static  = _route;
+      _static = _route;
       _dynamic = "";
       _pattern = new UrlPattern(_route);
     } else {
@@ -28,8 +28,8 @@ class RouteCompiler implements IRouteCompiler {
       _compilePattern();
     }
     
-    route.params     = _compiled;
-    route.pattern    = _pattern;
+    route.params = _compiled;
+    route.pattern = _pattern;
     route.isCompiled = true;
   }
     
@@ -54,7 +54,7 @@ class RouteCompiler implements IRouteCompiler {
   }
   
   void _compilePattern() {
-    var tmp  = _route;
+    var tmp = _route;
     var keys = _compiled.keys;
     
     keys.forEach((k){

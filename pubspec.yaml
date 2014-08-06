@@ -3,8 +3,6 @@ version: 0.0.2
 author: Meal Adam <devmetal91@gmail.com>
 description: Very simple REST api on based route package
 homepage: https://github.com/devmetal/DartRestLet
-environment:
-  sdk: 1.5.1
 documentation: https://github.com/devmetal/DartRestLet
-dependencies:
-  route: any
+dev_dependencies:
+  unittest: any

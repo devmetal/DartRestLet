@@ -1,20 +1,20 @@
-part of restlet;
+part of restlet.router;
 
-class Param<T> {
-  T _value;
-  String _name;
+class Param<K,V> {
+  V _value;
+  K _name;
   
   Param(this._name,[this._value]);
   
-  void setValue(T value){
+  void setValue(V value){
     _value = value;
   }
   
-  T getValue() {
+  V getValue() {
     return _value;
   }
   
-  String getName() {
+  K getKey() {
     return _name;
   }
 }

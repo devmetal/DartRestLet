@@ -1,21 +1,21 @@
 part of restlet;
 
-class RestServer implements IComponent, IRestModuleContainer {
-  RouteCompiler _compiler;
-  RouteResolver _resolver;
+class RestServer implements IComponent {
+  //RouteCompiler _compiler;
+  //RouteResolver _resolver;
   
-  Router _router;
+  //Router _router;
   
   String _baseRoute;
   Map<String, IRestModule> _modules;
   BaseRestModule _baseModule;
   
   RestServer(this._baseRoute) {
-    _compiler  = new RouteCompiler();
-    _resolver  = new RouteResolver();
+    //_compiler  = new RouteCompiler();
+    //_resolver  = new RouteResolver();
     
     _modules    = <String,IRestModule>{};
-    _baseModule = new BaseRestModule(getBaseRoute(), _compiler);
+    //_baseModule = new BaseRestModule(getBaseRoute(), _compiler);
     
     this.add(_baseModule);
   }
@@ -26,7 +26,7 @@ class RestServer implements IComponent, IRestModuleContainer {
 
   @override
   void serve(HttpServer server) {
-    _router = new Router(server);
+    /*_router = new Router(server);
     
     _modules.forEach((moduleRoute,module){
       module.getResources().forEach((route,resource){
@@ -38,13 +38,13 @@ class RestServer implements IComponent, IRestModuleContainer {
           resource.dispatch(req,route);
         });  
       });
-    });
+    });*/
     
   }
 
   @override
   void stop() {
-    _router = null;
+    //_router = null;
   }
   
   @override

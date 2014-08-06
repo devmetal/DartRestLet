@@ -14,9 +14,9 @@ abstract class IRestModule {
 class BaseRestModule implements IRestModule {
   Map<Route, Resource> _resources;
   String  _baseRoute;
-  RouteCompiler _compiler;
+  //RouteCompiler _compiler;
   
-  BaseRestModule(this._baseRoute, this._compiler) {
+  BaseRestModule(this._baseRoute /*this._compiler*/) {
     _resources = <Route,Resource>{};
   }
   
@@ -55,6 +55,6 @@ class BaseRestModule implements IRestModule {
   }
   
   void _compileResource(Resource res) {
-    _compiler.compile(res.route);
+    //_compiler.compile(res.route);
   } 
 }

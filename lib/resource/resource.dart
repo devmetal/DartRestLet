@@ -11,7 +11,7 @@ class Resource {
   }
 
   Resource(this.method, String url) {
-    route = new Route(url);
+    //route = new Route(url);
     _dsStream = new StreamController<ResourceEvent>();
   }
   
