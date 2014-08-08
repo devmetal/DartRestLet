@@ -1,4 +1,12 @@
-part of restlet;
+library restlet.resource;
+
+import 'route.dart';
+import 'src/rest/rest_request.dart';
+import 'dart:async';
+import 'dart:io';
+
+part './src/resource/resource_event.dart';
+part './src/resource/resource_factory.dart';
 
 class Resource {
   Route route;
@@ -11,7 +19,7 @@ class Resource {
   }
 
   Resource(this.method, String url) {
-    //route = new Route(url);
+    route = new Route.fromString(url);
     _dsStream = new StreamController<ResourceEvent>();
   }
   

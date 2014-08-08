@@ -1,4 +1,4 @@
-part of restlet;
+part of restlet.resource;
 
 class ResourceEvent {
   RestRequest request;

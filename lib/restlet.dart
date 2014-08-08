@@ -3,6 +3,8 @@ library restlet;
 import 'dart:io';
 import 'dart:async';
 import 'dart:convert';
+import 'dart:async';
+import 'dart:async';
 
 part './component/component.dart';
 
@@ -10,12 +12,12 @@ part 'src/router/param.dart';
 part 'route.dart';
 //part './router/route_compiler.dart';
 //part './router/route_resolver.dart';
-part './resource/resource.dart';
-part './resource/resource_factory.dart';
-part './resource/resource_event.dart';
+part 'resource.dart';
+part 'src/resource/resource_factory.dart';
+part 'src/resource/resource_event.dart';
 part './module/rest_module.dart';
 //part './module/rest_module_container.dart';
-part './request/rest_request.dart';
+part 'src/rest/rest_request.dart';
 
 part './component/components/rest_server.dart';
 

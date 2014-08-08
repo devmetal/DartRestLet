@@ -7,4 +7,5 @@ documentation: https://github.com/devmetal/DartRestLet
 dependencies:
   route: 0.4.6
 dev_dependencies:
+  mock: any
   unittest: any

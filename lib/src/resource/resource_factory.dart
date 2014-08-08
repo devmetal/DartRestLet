@@ -1,4 +1,4 @@
-part of restlet;
+part of restlet.resource;
 
 abstract class ResourceFactory {
   Resource createResource(String url);
