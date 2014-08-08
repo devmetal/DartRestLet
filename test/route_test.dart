@@ -7,7 +7,7 @@ main() {
   
   group('RouterTest',(){
     
-    setUp(() => r = new Route.fromString("/api/hello/:name"));
+    setUp(() => r = new Route.fromString("/api/hello/:name/:age"));
     
     test('Initialize',(){
       expect(r, new isInstanceOf<Route>());
@@ -15,15 +15,14 @@ main() {
     
     test('CompileParts',(){
       List<String> parts = r.getParts();
-      expect(parts.length,equals(3));
-      expect(parts,equals(['/api','/hello','/:name']));
+      expect(parts.length,equals(2));
+      expect(parts,equals(['name','age']));
     });
     
-    test('Matching',(){
-      RouteMatch routeMatch = r.match("/api/hello/Adam");
-      expect(routeMatch,isNotNull);
-      expect(routeMatch["name"],equals("Adam"));
-      
+    test('Matches',(){
+      RouteMatch match = r.match("/api/hello/Adam/23");
+      expect(match['name'],equals('Adam'));
+      expect(match['age'], equals('23'));
     });
   });
 }

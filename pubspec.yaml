@@ -1,8 +1,10 @@
 name: rest_let
-version: 0.0.2
+version: 0.0.4
 author: Meal Adam <devmetal91@gmail.com>
 description: Very simple REST api on based route package
 homepage: https://github.com/devmetal/DartRestLet
 documentation: https://github.com/devmetal/DartRestLet
+dependencies:
+  route: 0.4.6
 dev_dependencies:
   unittest: any

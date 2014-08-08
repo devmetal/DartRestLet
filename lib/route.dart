@@ -1,26 +1,33 @@
 library restlet.router;
 
+import 'package:route/url_pattern.dart';
+
 part './src/router/param.dart';
-part './src/router/compiler.dart';
 part './src/router/match.dart';
 
 class Route {
-  String routeString;
+  String _routeString;
   
-  List<Param<String,dynamic>> _parameters;
+  UrlPattern _pattern;
+  
   List<String> _routeParts;
   
+  String _parameterRegexString = r"\:([a-zA-Z_-]*)(\/){0,1}";
+  
+  RegExp _parameterRegexObject = null;
+  
   Route.fromString(String routeString) {
-    _parameters = <Param<String,dynamic>>[];
     _routeParts = <String>[];
+    _parameterRegexObject = new RegExp(_parameterRegexString);
+    _routeString = routeString;
     
-    this.routeString = routeString;
     _compile();
   }
   
   RouteMatch match(String route) {
-    List<String> parts = route.split("/");
-    if (parts.length != _routeParts.length) {
+    if (_pattern.matches(route)) {
+      return new RouteMatch.fromRouteMatches(_pattern.allMatches(route),_routeParts);
+    } else {
       return null;
     }
   }
@@ -30,12 +37,26 @@ class Route {
   }
   
   void _compile() {
-    _compileParts();
+    if (_hasRouteParameters()) {
+      _compileRouteParameterParts();
+    }
+    
+    _generateUrlPattern();
   }
   
-  void _compileParts() {
-    var regexStr = r"/([a-zA-Z_:]*)";
-    var regexObj = new RegExp(regexStr);
-    regexObj.allMatches(this.routeString).forEach( (m) => _routeParts.add(m.group(0)) );
+  bool _hasRouteParameters() => 
+      _parameterRegexObject.hasMatch(_routeString);
+  
+  void _compileRouteParameterParts() => 
+      _parameterRegexObject.allMatches(_routeString).forEach( (m) => _routeParts.add(m.group(1)) );
+  
+  void _generateUrlPattern() {
+    var tmp = _routeString;
+    if (_routeParts.isNotEmpty) {
+      _routeParts.forEach((e){
+        tmp = tmp.replaceAll(":${e}", "([a-zA-Z0-9]+)");
+      });
+    }
+    _pattern = new UrlPattern(tmp);
   }
 }
