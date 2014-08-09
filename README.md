@@ -7,6 +7,11 @@ We can create a simple RESTful http server.
 This API based on [route](https://github.com/justinfagnani/route) project.
 I wanna create api like expressjs, and i hope is useful.
 
+On Dart Pub
+-----------
+
+[rest_let](https://pub.dartlang.org/packages/rest_let)
+
 Basic example:
 --------------
 
