@@ -10,7 +10,7 @@ Stream<List<int>> generateByteStreamFromString(String str) {
 
 void main() {
   
-  RestRequest request;
+  BodyParser parser;
   
   String streamString = '''
 {"book":{
@@ -20,12 +20,18 @@ void main() {
 }}
 ''';
   
-  group('RestRequestTests',(){
-    setUp(() => request = new RestRequest.fromStream(generateByteStreamFromString(streamString)));
+  group('BodyParserTests',(){
+    setUp(() => parser = new BodyParser.fromStream(generateByteStreamFromString(streamString)));
     
     test('Test Body',(){
-      Future<Map<String,dynamic>> body = request.body();
+      Future<Map<String,dynamic>> body = parser.body();
       expect(body,completion(equals(JSON.decode(streamString))));
+    });
+    
+    test('Empty body',(){
+      BodyParser empty = new BodyParser.fromStream(generateByteStreamFromString(""));
+      Future<Map<String,dynamic>> body = empty.body();
+      expect(body,completion(isNull)); 
     });
   });
   

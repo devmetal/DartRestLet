@@ -3,5 +3,6 @@ part of restlet.resource;
 class ResourceEvent {
   RestRequest request;
   Route route;
-  ResourceEvent(this.request,this.route);
+  RouteMatch match;
+  ResourceEvent(this.request,this.match,this.route);
 }
