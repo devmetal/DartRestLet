@@ -33,7 +33,10 @@ class RestRequest {
     });
     
     _method = _request.method;
-    _contentType = _headers.contentType.mimeType;
+    var contentType = _headers.contentType;
+    if (contentType != null) {
+      _contentType = contentType.mimeType;
+    }
   }
   
   void _initParameters() {
@@ -58,7 +61,7 @@ class RestRequest {
   
   Map<String,dynamic> get body => _body;
   
-  HttpRequest get request => _request;
+  HttpRequest get httpRequest => _request;
   
   HttpHeaders get headers => _headers;
   

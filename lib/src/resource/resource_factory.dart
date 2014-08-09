@@ -26,7 +26,6 @@ class PUTFactory extends ResourceFactory {
 }
 
 class DELETEFactory extends ResourceFactory {
-  
   @override
   Resource createResource(String url) {
     return new Resource("DELETE",url);

@@ -6,6 +6,8 @@ class RestResponse extends MapBase {
   
   HttpHeaders _responseHeaders;
   
+  ContentType _contentType;
+  
   Map<String,dynamic> _innerMap;
   
   RestResponse(this._httpResponse) {
@@ -14,13 +16,37 @@ class RestResponse extends MapBase {
   }
   
   Future send() {
-    _contentTypeApplicationJson();
-    _writeContent();
+    if (_contentType == null) {
+      contentTypeApplicationJson();
+    }
+    
+    _responseHeaders.add('Content-Type', _contentType.value);
+    
+    if (_innerMap.isNotEmpty) {
+      _writeContent();  
+    }
+    
     return _send();
   }
   
-  void _contentTypeApplicationJson() {
-    _responseHeaders.contentType = new ContentType('application', 'json',charset: 'utf-8');
+  void contentTypeApplicationJson() {
+    _contentType = ContentType.JSON;
+  }
+  
+  void conetntTypeTextHtml() {
+    _contentType = ContentType.HTML;
+  }
+  
+  void contentTypeTextPlain() {
+    _contentType = ContentType.TEXT;
+  }
+  
+  void contentTypeBinary() {
+    _contentType = ContentType.BINARY;
+  }
+  
+  void contentType(String type) {
+    _contentType = ContentType.parse(type);
   }
   
   void _writeContent() {
@@ -37,7 +63,7 @@ class RestResponse extends MapBase {
   HttpResponse get httpResponse => _httpResponse;
   
   set statusCode(int code) => _httpResponse.statusCode = code;
-
+  
   @override
   operator [](Object key) => _innerMap[key];
 

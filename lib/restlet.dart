@@ -1,63 +1,71 @@
 library restlet;
 
+import 'package:route/server.dart';
 import 'dart:io';
 import 'dart:async';
-import 'dart:convert';
-import 'dart:async';
-import 'dart:async';
+import 'resource.dart';
 
-part './component/component.dart';
-
-part 'src/router/param.dart';
-part 'route.dart';
-//part './router/route_compiler.dart';
-//part './router/route_resolver.dart';
-part 'resource.dart';
-part 'src/resource/resource_factory.dart';
-part 'src/resource/resource_event.dart';
-part './module/rest_module.dart';
-//part './module/rest_module_container.dart';
-part 'src/rest/rest_request.dart';
-
-part './component/components/rest_server.dart';
+export 'route.dart';
+export 'resource.dart';
+export 'rest.dart';
 
 class RestLet {
   
-  List<IComponent> _components;
+  List<Resource> _resources;
   
   HttpServer _server;
   
-  RestLet() {
-    _components = <IComponent>[];
-  }
+  Router _router;
   
-  void addComponent(IComponent c) {
-    _components.add(c);
+  RestLet() {
+    _resources = <Resource>[];
   }
   
   void serve(InternetAddress address, int port) {
-    
-    _init();
-    
     HttpServer.bind(address, port)
     .then((HttpServer server){
       _server = server;
-      _components.forEach((e) => e.serve(server));
+      _router = new Router(server);
+      _resources.forEach((Resource res){
+        _router.serve(res.route.pattern,method: res.method)
+          .listen((HttpRequest req){
+            res.dispatch(req, res.route);
+        });
+      });
       print("Address: http://${server.address.address}:${server.port}");
     });
-    
   }
   
   void stop() {
-    _components.forEach((e) => e.stop());
     _server.close(force:true).then((_){
       print("Server closed");
       exit(0);
     });
   }
   
-  void _init() {
-    _components.forEach((e) => e.init());
+  Stream<ResourceEvent> get(String route) {
+    return this.addResource(_createResource(new GETFactory(), route));
+  }
+  
+  Stream<ResourceEvent> post(String route) {
+    return this.addResource(_createResource(new POSTFactory(), route));
+  }
+  
+  Stream<ResourceEvent> put(String route) {
+    return this.addResource(_createResource(new PUTFactory(), route));
+  }
+  
+  Stream<ResourceEvent> delete(String route) {
+    return this.addResource(_createResource(new DELETEFactory(), route));
+  }
+  
+  Stream<ResourceEvent> addResource(Resource res) {
+    _resources.add(res);
+    return res.getDispatcher();
+  }
+  
+  Resource _createResource(ResourceFactory factory, String url) {
+    return factory.createResource(url);
   }
   
 }

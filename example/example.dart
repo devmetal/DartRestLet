@@ -5,74 +5,70 @@ import 'dart:async';
 
 void main() {
   
-  RestServer r = new RestServer('/api');
+  RestLet r = new RestLet();
   
   r.get("/hello/:name/:male")
     .listen((ResourceEvent e){
       var request = e.request;
+      
       print("Request on");
       print(request.method);
-      print(request.uri.path);
+      print(request.httpRequest.uri.path);
       
-      var route = e.route;
-      var name = route.params["name"].getValue();
-      var male = route.params["male"].getValue();
+      var routeMatch = e.match;
+      var name = routeMatch["name"];
+      var male = routeMatch["male"];
       
-      request.response
+      request.restResponse
         ..statusCode = 200
-        ..headers
-          .add('Content-Type', 'text/plain')
-        ..write("Hello to ${(male == "1"?"Mr.":"Ms.")} ${name}")
-        ..close();
+        ..contentTypeTextPlain()
+        ..httpResponse
+          .write("Hello to ${(male == "1"?"Mr.":"Ms.")} ${name}")
+        ..send();
     });
   
   r.post("/book")
     .listen((ResourceEvent e){
       var request = e.request;
-      var body = request.body;
+      var response = request.restResponse;
       
       print("Request on");
       print(request.method);
-      print(request.uri.path);
-      print(JSON.encode(request.body));
+      print(request.httpRequest.uri.path);
       
-      if (body == null || !(body is Map) || 
-          !body.containsKey('bookName')) {
-        request
-          ..setResponseStatus(403)
-          ..addToResponseHeader("Content-Type", "text/html")
-          ..writeToResponse("<h1>Wrong request</h1>")
-          ..sendResponse();
+      if (request.body == null || !request.body.containsKey('bookName')) {
+        response.statusCode = 403;
+        response['data'] = {'error':'Wrong request!','solution':'Please send me a bookName'};
+        response.send();
         return;
       }
       
-      getBookDatas(body['bookName'])
+      print(JSON.encode(request.body));
+      
+      getBookDatas(request.body['bookName'])
       .then((datas){
-        request
-          ..setResponseStatus(200)
-          ..addToResponseHeader("Content-Type", "application/json")
-          ..addAllToResponse(datas)
-          ..sendResponse();
+        response.statusCode = 200;
+        response['datas'] = {'book':datas};
+        response.send();
       });
     });
   
-  r.get("/hello")
+  r.post("/hello")
     .listen((ResourceEvent e){
       var request = e.request;
       print("Request on");
       print(request.method);
-      print(request.uri.path);
+      print(request.httpRequest.uri.path);
       
-      request
-        ..setResponseStatus(200)
-        ..addToResponseHeader('Content-Type', 'text/plain')
-        ..writeToResponse("Hello to")
-        ..sendResponse();
+      var response = request.restResponse;
+      response['data'] = request.body;
+      response
+        ..statusCode = 200
+        ..contentTypeApplicationJson()
+        ..send();
     });
   
-  RestLet app = new RestLet();
-  app.addComponent(r);
-  app.serve(InternetAddress.LOOPBACK_IP_V4, 4444);
+  r.serve(InternetAddress.LOOPBACK_IP_V4, 4444);
 }
 
 Future<Map<String,dynamic>> getBookDatas(String name) {

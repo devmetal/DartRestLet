@@ -59,4 +59,6 @@ class Route {
     }
     _pattern = new UrlPattern(tmp);
   }
+  
+  UrlPattern get pattern => _pattern;
 }

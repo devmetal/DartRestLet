@@ -23,7 +23,8 @@ class Resource {
     _dsStream = new StreamController<ResourceEvent>();
   }
   
-  void dispatch(HttpRequest req, Route route, String routeString) {
+  void dispatch(HttpRequest req, Route route) {
+    var routeString = req.requestedUri.path;
     BodyParser parser = new BodyParser.fromStream(req);
     RouteMatch match = route.match(routeString);
     
