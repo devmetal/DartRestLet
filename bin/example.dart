@@ -50,6 +50,13 @@ void main() {
         response.statusCode = 200;
         response['datas'] = {'book':datas};
         response.send();
+      })
+      .catchError((err){
+        print("Error!");
+        print(err);
+        response.statusCode = 500;
+        response['datas'] = {'book':null};
+        response.send();
       });
     });
   
@@ -72,32 +79,29 @@ void main() {
 }
 
 Future<Map<String,dynamic>> getBookDatas(String name) {
-    Completer<Map<String,dynamic>> c = new Completer<Map<String,dynamic>>();
     var uri = new Uri.https("www.googleapis.com", "/books/v1/volumes",{"q":name});
     print(uri.toString());
     
     var client = new HttpClient();
-    client.getUrl(uri)
-      .then((HttpClientRequest req) => req.close()
-        .then((HttpClientResponse resp){
-          UTF8.decodeStream(resp).then((sdata){
-            var data = JSON.decode(sdata);
-            if (data.containsKey('items')) {
-              var item = data['items'][0];
-              var bookDatas = {
-                'title':item['volumeInfo']['title'],
-                'authors':item['volumeInfo']['authors'],
-                'desc':item['volumeInfo']['description'],
-                'ids':item['volumeInfo']['industryIdentifiers'],
-                'rating':item['volumeInfo']['averageRating']
-              };
-              c.complete(bookDatas);
-            } else {
-              c.complete({'notfound':true});
-            }
-          });
-        }));
-  return c.future;
+    return client.getUrl(uri)
+        .then((HttpClientRequest req) => req.close())
+          .then((HttpClientResponse resp) => UTF8.decodeStream(resp))
+            .then((data) => processJSON(data));
 }
 
-
+Map<String,dynamic> processJSON(String data) {
+  var jsonData = JSON.decode(data);
+  if (jsonData.containsKey('items')) {
+    var item = jsonData['items'][0];
+    var bookDatas = {
+      'title':item['volumeInfo']['title'],
+      'authors':item['volumeInfo']['authors'],
+      'desc':item['volumeInfo']['description'],
+      'ids':item['volumeInfo']['industryIdentifiers'],
+      'rating':item['volumeInfo']['averageRating']
+    };
+    return bookDatas;
+  } else {
+    return {'notfound':true};
+  }  
+}
