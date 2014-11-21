@@ -22,6 +22,12 @@ class RouteMatch {
     }
   }
   
+  List<dynamic> getValuesAsList() {
+    var list = <dynamic>[];
+    _params.forEach((p) => list.add(p.getValue()));
+    return list;
+  }
+  
   operator [](String name){
     return getValue(name);
   }
