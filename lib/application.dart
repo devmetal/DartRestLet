@@ -3,6 +3,7 @@ library application;
 import 'dart:mirrors';
 
 import 'restlet.dart';
+import 'dart:io';
 
 class module {
   final String baseRoute;
@@ -109,26 +110,28 @@ class Application {
   final RestLet _restLet = new RestLet();
   Application();
   
-  void addModule(Type t) {
-    MetadataParser parser = new MetadataParser(t);
+  void addModule(dynamic module) {
+    MetadataParser parser = new MetadataParser(module.runtimeType);
     parser.actions().forEach((Action a) => 
-      _restLet.addResource(_createResource(a)).listen(_createListener(a))
+      _restLet.addResource(_createResource(a)).listen(_createListener(module,a))
     );
+  }
+  
+  void start() {
+    _restLet.serve(InternetAddress.LOOPBACK_IP_V4, 4444);
   }
   
   Resource _createResource(Action a) => 
       new ActionResourceFactory(a).createResource(a.route);
   
-  Function _createListener(Action a) {
+  Function _createListener(dynamic m,Action a) {
     void listener(ResourceEvent evt) {
       List<dynamic> params = evt.match.getValuesAsList();
       RestRequest request = evt.request;
       RestResponse response = request.restResponse;
       
-      a.mirror.invoke(a.symbol, params,{
-        request:request,
-        response:response
-      });
+      InstanceMirror instance = reflect(m);
+      instance.invoke(a.symbol, params);
     }
     
     return listener;
